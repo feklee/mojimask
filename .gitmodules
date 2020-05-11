@@ -1,0 +1,3 @@
+[submodule "esp/components/tarablessd1306"]
+	path = esp/components/tarablessd1306
+	url = https://github.com/TaraHoleInIt/tarablessd1306
