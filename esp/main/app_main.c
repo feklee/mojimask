@@ -6,6 +6,9 @@
 #include "ssd1306.h"
 #include "ssd1306_draw.h"
 #include "ssd1306_default_if.h"
+#include "app_camera.h"
+#include "app_wifi.h"
+#include "app_httpd.h"
 
 static const int SPIDisplayChipSelect = 15;
 static const int SPIDisplayWidth = 128;
@@ -14,7 +17,7 @@ static const int SPIResetPin = 2;
 
 struct SSD1306_Device SPIDisplay;
 
-bool DefaultBusInit() {
+bool default_bus_init() {
     assert(SSD1306_SPIMasterInitDefault() == true);
     assert(SSD1306_SPIMasterAttachDisplayDefault(&SPIDisplay, SPIDisplayWidth, SPIDisplayHeight, SPIDisplayChipSelect, SPIResetPin) == true);
     return true;
@@ -73,7 +76,11 @@ void delay(
 }
 
 void app_main(void) {
-    if (!DefaultBusInit()) {
+    app_wifi_main();
+    app_camera_main();
+    app_httpd_main();
+
+    if (!default_bus_init()) {
         return;
     }
 
