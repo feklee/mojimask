@@ -1,3 +1,6 @@
 [submodule "esp/components/tarablessd1306"]
 	path = esp/components/tarablessd1306
 	url = https://github.com/TaraHoleInIt/tarablessd1306
+[submodule "esp/components/esp32-camera"]
+	path = esp/components/esp32-camera
+	url = https://github.com/espressif/esp32-camera.git
