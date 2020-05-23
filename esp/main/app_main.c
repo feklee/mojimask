@@ -5,6 +5,7 @@
 #include "freertos/task.h"
 #include "ssd1306.h"
 #include "ssd1306_draw.h"
+#include "ssd1306_font.h"
 #include "ssd1306_default_if.h"
 #include "app_camera.h"
 #include "app_wifi.h"
@@ -76,13 +77,19 @@ void delay(
 }
 
 void app_main(void) {
-    app_wifi_main();
-    app_camera_main();
-    app_httpd_main();
-
     if (!default_bus_init()) {
         return;
     }
+
+    SSD1306_Clear(&SPIDisplay, SSD_COLOR_BLACK);
+    SSD1306_SetFont(&SPIDisplay, &Font_droid_sans_fallback_24x28);
+    SSD1306_FontDrawAnchoredString(&SPIDisplay, TextAnchor_Center,
+                                   "MOJIMASK", SSD_COLOR_WHITE);
+    SSD1306_Update(&SPIDisplay);
+
+    app_wifi_main();
+    app_camera_main();
+    app_httpd_main();
 
     for (unsigned int i = 0;; i++) {
         SSD1306_Clear(&SPIDisplay, SSD_COLOR_BLACK);
