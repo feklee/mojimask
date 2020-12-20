@@ -14,8 +14,8 @@
 
 #include "sharedSettings.h"
 
-#define ESP_WIFI_SSID "dsl"
-#define ESP_WIFI_PASS "0xdeadbeef"
+#define ESP_WIFI_SSID "MojiMask"
+#define ESP_WIFI_PASS "m4sk3nb4ll"
 
 static const char *TAG = "wifi";
 

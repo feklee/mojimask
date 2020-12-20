@@ -18,6 +18,7 @@
 #include "esp_camera.h"
 #include "img_converters.h"
 #include "sdkconfig.h"
+#include "app_display.h"
 
 #if defined(ARDUINO_ARCH_ESP32) && defined(CONFIG_ARDUHAL_ESP_LOG)
 #include "esp32-hal-log.h"
@@ -394,55 +395,45 @@ static esp_err_t stream_handler(httpd_req_t *req){
     return res;
 }
 
-static bool evaluate_color_command(const char * const buf) {
-    const char *c = buf + 1;
-    char data[5] = {'C', 0};
-    for (short i = 0; i < 4; i++) {
-        char color = 0;
-        for (short j = 0; j < 3; j++) {
-            color <<= 2;
-            int value = *c - 48;
-            const bool value_is_valid = value >= 0 && value <= 3;
-            if (!value_is_valid) {
-                return false;
-            }
-            color += value;
-            c++;
-        }
-        data[i + 1] = color;
-    }
-    return true;
+static esp_err_t happy_handler(httpd_req_t *req)
+{
+    display_draw_happy();
+    return httpd_resp_send(req, NULL, 0);
 }
 
-static esp_err_t cmd_handler(httpd_req_t *req)
+static esp_err_t neutral_handler(httpd_req_t *req)
 {
-    char buf[BUF_LEN] = {'\0'};
+    display_draw_neutral();
+    return httpd_resp_send(req, NULL, 0);
+}
 
-    if (httpd_req_get_url_query_str(req, buf, BUF_LEN - 1) != ESP_OK) {
-        httpd_resp_send_404(req);
-        return ESP_FAIL;
-    }
-
-    const bool is_color_command = buf[0] == 'C' && strlen(buf) == 13;
-    if (!is_color_command) {
-        return httpd_resp_send_500(req);
-    }
-
-    bool success = evaluate_color_command(buf);
-    if (!success) {
-        return httpd_resp_send_500(req);
-    }
-
+static esp_err_t sad_handler(httpd_req_t *req)
+{
+    display_draw_sad();
     return httpd_resp_send(req, NULL, 0);
 }
 
 void app_httpd_main() {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 
-    httpd_uri_t cmd_uri = {
-        .uri = "/",
+    httpd_uri_t happy_uri = {
+        .uri = "/h",
         .method = HTTP_GET,
-        .handler = cmd_handler,
+        .handler = happy_handler,
+        .user_ctx = NULL
+    };
+
+    httpd_uri_t neutral_uri = {
+        .uri = "/n",
+        .method = HTTP_GET,
+        .handler = neutral_handler,
+        .user_ctx = NULL
+    };
+
+    httpd_uri_t sad_uri = {
+        .uri = "/s",
+        .method = HTTP_GET,
+        .handler = sad_handler,
         .user_ctx = NULL
     };
 
@@ -475,7 +466,9 @@ void app_httpd_main() {
     ESP_LOGI(TAG, "Starting web server on port: '%d'", config.server_port);
     if (httpd_start(&camera_httpd, &config) == ESP_OK)
     {
-        httpd_register_uri_handler(camera_httpd, &cmd_uri);
+        httpd_register_uri_handler(camera_httpd, &happy_uri);
+        httpd_register_uri_handler(camera_httpd, &neutral_uri);
+        httpd_register_uri_handler(camera_httpd, &sad_uri);
     }
 
     config.server_port += 1;

@@ -23,8 +23,8 @@
 
 // Wi-Fi gateway
 static const uint8_t gw[] =
-  {192, 168, 100, 1}; // needs to be on separate line, or the current Rollup
-                      // regexp rules don't work
+  {192, 168, 43, 1}; // needs to be on separate line, or the current Rollup
+                     // regexp rules don't work
 
 // Values: {color of top hemisphere, color of bottom hemisphere}
 static const uint8_t nodeColorsList[][2] =
